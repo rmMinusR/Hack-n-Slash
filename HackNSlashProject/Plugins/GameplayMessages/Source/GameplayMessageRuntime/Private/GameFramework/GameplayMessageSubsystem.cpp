@@ -138,15 +138,21 @@ DEFINE_FUNCTION(UGameplayMessageSubsystem::execK2_BroadcastMessage)
 	}
 }
 
-FGameplayMessageListenerHandle UGameplayMessageSubsystem::RegisterListenerInternal(FGameplayTag Channel, TFunction<void(FGameplayTag, const UScriptStruct*, const void*)>&& Callback, const UScriptStruct* StructType, EGameplayMessageMatch MatchType)
+FGameplayMessageListenerHandle UGameplayMessageSubsystem::RegisterListenerInternal(FGameplayTag Channel, TFunction<void(FGameplayTag, const UScriptStruct*, const void*)>&& Callback, const UScriptStruct* StructType, int Priority, EGameplayMessageMatch MatchType)
 {
 	FChannelListenerList& List = ListenerMap.FindOrAdd(Channel);
 
-	FGameplayMessageListenerData& Entry = List.Listeners.AddDefaulted_GetRef();
+	//RSC: Scan until we find something of higher priority
+	int insertIndex = 0;
+	while (insertIndex < List.Listeners.Num() && List.Listeners[insertIndex].Priority > Priority) ++insertIndex;
+	
+	//FGameplayMessageListenerData& Entry = List.Listeners.AddDefaulted_GetRef();
+	FGameplayMessageListenerData& Entry = List.Listeners.InsertDefaulted_GetRef(insertIndex);
 	Entry.ReceivedCallback = MoveTemp(Callback);
 	Entry.ListenerStructType = StructType;
 	Entry.bHadValidType = StructType != nullptr;
 	Entry.HandleID = ++List.HandleID;
+	Entry.Priority = Priority;
 	Entry.MatchType = MatchType;
 
 	return FGameplayMessageListenerHandle(this, Channel, Entry.HandleID);

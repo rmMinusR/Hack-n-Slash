@@ -30,10 +30,11 @@ public:
 	 *
 	 * @param Channel			The message channel to listen for
 	 * @param PayloadType		The kind of message structure to use (this must match the same type that the sender is broadcasting)
+	 * @param Priority			RSC MOD: Priority of this listener. Higher values = later execution.
 	 * @param MatchType			The rule used for matching the channel with broadcasted messages
 	 */
 	UFUNCTION(BlueprintCallable, Category = Messaging, meta = (WorldContext = "WorldContextObject", BlueprintInternalUseOnly = "true"))
-	static UAsyncAction_ListenForGameplayMessage* ListenForGameplayMessages(UObject* WorldContextObject, FGameplayTag Channel, UScriptStruct* PayloadType, EGameplayMessageMatch MatchType = EGameplayMessageMatch::ExactMatch);
+	static UAsyncAction_ListenForGameplayMessage* ListenForGameplayMessages(UObject* WorldContextObject, FGameplayTag Channel, UScriptStruct* PayloadType, int Priority, EGameplayMessageMatch MatchType = EGameplayMessageMatch::ExactMatch);
 
 	/**
 	 * Attempt to copy the payload received from the broadcasted gameplay message into the specified wildcard.
@@ -67,6 +68,7 @@ private:
 	TWeakObjectPtr<UWorld> WorldPtr;
 	FGameplayTag ChannelToRegister;
 	TWeakObjectPtr<UScriptStruct> MessageStructType = nullptr;
+	int Priority; //RSC MOD
 	EGameplayMessageMatch MessageMatchType = EGameplayMessageMatch::ExactMatch;
 
 	FGameplayMessageListenerHandle ListenerHandle;

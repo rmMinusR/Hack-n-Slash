@@ -61,6 +61,8 @@ struct FGameplayMessageListenerData
 	// Callback for when a message has been received
 	TFunction<void(FGameplayTag, const UScriptStruct*, const void*)> ReceivedCallback;
 
+	int Priority;
+
 	int32 HandleID;
 	EGameplayMessageMatch MatchType;
 
@@ -222,6 +224,7 @@ private:
 		FGameplayTag Channel, 
 		TFunction<void(FGameplayTag, const UScriptStruct*, const void*)>&& Callback,
 		const UScriptStruct* StructType,
+		int Priority,
 		EGameplayMessageMatch MatchType);
 
 	void UnregisterListenerInternal(FGameplayTag Channel, int32 HandleID);

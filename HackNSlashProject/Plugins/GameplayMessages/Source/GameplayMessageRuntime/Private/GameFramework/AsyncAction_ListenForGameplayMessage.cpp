@@ -4,7 +4,7 @@
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Engine/Engine.h"
 
-UAsyncAction_ListenForGameplayMessage* UAsyncAction_ListenForGameplayMessage::ListenForGameplayMessages(UObject* WorldContextObject, FGameplayTag Channel, UScriptStruct* PayloadType, EGameplayMessageMatch MatchType)
+UAsyncAction_ListenForGameplayMessage* UAsyncAction_ListenForGameplayMessage::ListenForGameplayMessages(UObject* WorldContextObject, FGameplayTag Channel, UScriptStruct* PayloadType, int Priority, EGameplayMessageMatch MatchType)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World)
@@ -16,6 +16,7 @@ UAsyncAction_ListenForGameplayMessage* UAsyncAction_ListenForGameplayMessage::Li
 	Action->WorldPtr = World;
 	Action->ChannelToRegister = Channel;
 	Action->MessageStructType = PayloadType;
+	Action->Priority = Priority;
 	Action->MessageMatchType = MatchType;
 	Action->RegisterWithGameInstance(World);
 
@@ -40,6 +41,7 @@ void UAsyncAction_ListenForGameplayMessage::Activate()
 					}
 				},
 				MessageStructType.Get(),
+				Priority,
 				MessageMatchType);
 
 			return;
